@@ -23,21 +23,37 @@ Git 有着显赫的身世 : Git 是 Linux 之父 Linus Torvalds的伟大作品�
 + 时刻保证数据的完整性:所有数据都要进行内容计算和校验,并将结果作为数据的唯一标识和索引
 + 有能力高效管理类似 Linux 内核一样的超大规模的项目( 速度和数据量 )
 
+### 如何学习
+Git 作为如今开源世界的基础，优秀教程多如牛毛。随意挑其中几个教程走上一遍，就能很好的掌握基本内容。
+
+但作为 linus 这样的技术天神设计的工具，本身就是非常技术化的思路。了解其内部原理，无论对于记忆命令还是掌握高阶技巧都很有必要。
+
+Kent Beck(JUnit作者) 说他最终发现git的命令其实都是图算法中节点的创建删除和移动.
+
 ### 概念
 + sha-1                                   #是内容如 3d6051579e6434c62965b30583c67884f513acab 这样的字符串，用来唯一标识一段内容。类似与md5,在命令行下有sha1sum命令可以帮助生成文件的sha-1的值。其特点同样的内容生成出的sha-1值是一样的,而且不同的文件生成相同的sha-1概率是非常小的(到2014年为止，都没有听说有人遇到过碰撞的情况)。在 git 中，会通过 sha-1 去标识文件内容，提交内容，分支内容等等，也通过sha-1去查找文件内容.
 + blob                                    #git中保存文件内容的对象，存储在.git/objects目录下，会对文件内容的sha-1为文件名(准确的说是后38位，前两位为其所在子目录名)，并以zlib对文件内容进行压缩存储。
 + tree                                    #git中保存目录信息的对象，存储在.git/objects目录下，存储了目录和文件的层次信息也就是说会包含blob对象和子tree对象，同样会以这些信息的sha-1为文件名。
-+ commit                                  #git中保存一次提交信息的对象，一次提交可以认为是工作目录所有文件的快照(很多人以为commit保存的是改动，其实不是)，这个快照记录了一个tree信息(整个工作目录以及文件内容的信息)，提交者，提交信息，修改时间，然后同样以这些信息得出的sha-1为文件名保存在.git/objects目录下。
++ commit                                  #git中保存一次提交信息的对象，一次提交可以认为是工作目录所有文件的快照(很多人以为commit保存的是改动，其实不是)，这个快照记录了一个tree信息(整个工作目录以及文件内容的信息)，提交者，提交信息，修改时间,父节点信息，然后同样以这些信息得出的sha-1为文件名保存在.git/objects目录下。
 + ref                                     #可以理解为commit的别名。sha-1不利于记忆，因此我们更多的是给commit加上别名，这部份信息存储在.git/refs下
-+ branch                                  #branch是ref的一种，含意是分支，每当用户在一个分支上有新的提交时，git会自动帮你把该branch指向的commit信息更新。
++ branch                                  #branch是ref的一种，含意是分支，每当用户在一个分支上有新的提交时，git会自动帮你把该branch指向的commit信息更新。因此branch和svn中的branch相比要轻量级很多。不用考虑会有额外的开销。用户可以随时拉出一个分支去做自己想要做的工作，随时合并回主分支. 分支是用来将特性开发绝缘开来的。在你创建仓库的时候，master 是“默认的”分支。在其他分支上进行开发，完成后再将它们合并到主分支上。
 + tag                                     #tag也是ref的一种，含意是标签，同样是给一个commit起别名，但这个别名是不可变的,同时还支持添加额外的描述信息，并保存为专用的tag对象(这也是为什么有时候tag不能直接当commit用的原因，而要tag^0来表示)
-+ HEAD                                    #记录当前目录checkout出来的那个commit点或者是ref的点，保存在 .git/HEAD 里，git log 的时候，第一个点就是HEAD.
++ HEAD                                    #记录当前目录checkout出来的那个commit点或者是ref的点，保存在 .git/HEAD 里，git log 的时候，第一个点就是HEAD.也是你当前工作的那个点。你的改动也都是基于这个点。
+
+
 
 + STASH                                   #git的五个存储区域之一，用来临时存储用户不想提交的内容，主要是将INDEX中的改动存到STASH中，这样用户就可以在INDEX区域开始新的工作。可以理解为将INDEX中的改动移动到STASH中，同样也有命令支持将STASH中的内容移动到WORKSPACE中
 + WORKSPACE                               #git的五个存储区域之一，主要是用户还没有加入道INDEX区域中的改动，这部份改动还没有存入到.git中，如果要提交这部份改动需要先将他们加入到INDEX区域中。我们直接修改一个文件，或者创建删除一个文件，这些改动都是在WORKSPACE区域
 + INDEX                                   #git的五个存储区域之一，已经存到.git中，但还没有提交的改动，所谓提交就是把在INDEX中的内容对应tree，加上提交的描述和提交的作者等信息创建一个新的commit对象，并清空INDEX区域。git add 命令就是将WORKSPACE中的改动移动到INDEX中。
 + LOCAL REPOSITORY                        #git的五个存储区域之一，指本地的git库,git commit可以理解为改动从INDEX区域提交到了LOCAL REPOSITORY。
 + UPSTREAM REPOSITORY                     #git的五个存储区域之一，指远程的git库.我们会使用一个服务器去集中管理多个人的提交。这时就存在这样一个UPSTREAM REPOSITORY，git push可以理解为将改动存到UPSTREAM REPOSITORY区域
+
++ merge                                   #将两个来自于同一个父亲节点然后有不同改动的点，合并成一个点.
++ rebase                                  #改变改动的次序,修改改动历史，让改动更清晰，更有意义
++ remote                                  #一般指服务器，用来存储提交，和其他用户协作。其内容就是你git库的备份。但一般用户没有修改其历史的权限，因此需要用户提交时注意自己所有修改的历史必需是还没有提交的remote的.远程一般在本地以远程分支出现，远程分支不能直接修改，需要我们检出一个本地分支，在进行修改。
+
++ 工作流                                   #你的本地仓库由 git 维护的三棵“树”组成。第一个是你的 工作目录，它持有实际文件；第二个是 暂存区（Index），它像个缓存区域，临时保存你的改动；最后是 HEAD，它指向你最后一次提交的结果
++ 相对引用                                 # 形如 HEAD^^ 或者 HEAD~2 ,指当前commit的上上个commit.这样不用去记忆长长的sha-1值
 
 ## Git基本流程
 
@@ -361,6 +377,13 @@ $ git push origin master -f
 ```
 
 ### git rebase
+
+```
+$ git rebase master
+$ git rebase -i
+```
+### git describe
+
 ### git reset
 
 ```
@@ -484,6 +507,25 @@ $ git archive --format zip --output /full/path/to/zipfile.zip master
 
 ## 技巧
 
++ sha-1值可以只写前几位，只要能够区分不同的commit就行，比如 fed2da64c0efc5293610bdd892f82a58e8cbc5d8 就可以简写为 fed2 。
+我们可以用4位以上的位数的sha-1的前缀去表示一个sha-1,只要能保证唯一.当然只用四位唯一标识一个提交在android一些比较大的库还是有可能重复的，
+所以一般 git log --oneline 等显示sha-1缩写的地方都是7位。即便是在linux kernel这样庞大的项目中写 12 位也足够了.
+
++ 误删了某个分支，可以找回
+
+只要提交过的commit，在git下次进行垃圾回收之前，都是会被保留的。因此误删了一个分支，但分支相关的commit还在，只要查看，最近操作过的commit信息，然后重新在这个commit上创建分支就可以了。
+
+```
+# 查看最近操作过的commit
+$ git reflog
+7a098ac HEAD@{0}: commit: add same command
+3d60515 HEAD@{1}: commit: 添加基本流程
+5b83d2b HEAD@{2}: commit (amend): first commit
+c309a5f HEAD@{3}: commit (initial): first commit
+# 重新在某个commit上创建分支
+$ git checkout 3d60515 -b target-branch
+```
+
 + fix up
 
 ```
@@ -493,18 +535,175 @@ $ git rebase abcde^ --autosquash -i
 
 ## 理念
 
+### Branches
+
+* 选择*简短*和*具有描述性*的名字来命名分支：
+
+  ```shell
+  # 好
+  $ git checkout -b oauth-migration
+
+  # 不好，过于模糊
+  $ git checkout -b login_fix
+  ```
+
+* 来自外部的标识符也适合用作分支的名字，例如来自 Github 的 Issue 序号。
+
+  ```shell
+  # GitHub issue #15
+  $ git checkout -b issue-15
+  ```
+
+* 用破折号分割单词。
+
+* 当不同的人围绕同一个特性开发时，维护整个团队的特性分支与每个人的独立分支是比较方便的做法。使用如下的命名方式：
+
+  ```shell
+  $ git checkout -b feature-a/master # team-wide branch
+  $ git checkout -b feature-a/maria # Maria's branch
+  $ git checkout -b feature-a/nick # Nick's branch
+  ```
+
+  合并时，由每个人的独立分支向全队的功能分支合并，最后合并到主分支。见[合并](#merging) 。
+
+* 合并之后，除非有特殊原因，从上游仓库中删除你的分支。使用如下命令查看已合并的分支：
+
+  ```shell
+  $ git branch --merged | grep -v "\*"
+  ```
+
+### Commits
+
+* 每个提交应当只包含一个简单的逻辑改动，不要在一个提交里包含多个逻辑改动。比如，如果一个补丁修复了一个 Bug，又优化了一个特性的性能，就将其拆分。
+* 不要将一个逻辑改动拆分提交。例如一个功能的实现及其对应的测试应当一并提交。
+* 尽早、尽快提交。出问题时，短小、完整的提交更容易发现并修正。
+* 提交应当依*逻辑*排序。例如，如果 X 提交依赖于 Y，那么 Y 提交应该在 X 前面。
+
+### Messages
+
+* 使用编辑器编写提交信息，而非命令行。
+
+  ```shell
+  # 好
+  $ git commit
+
+  # 不好
+  $ git commit -m "Quick fix"
+  ```
+
+  使用命令行会鼓励试图用一行概括提交內容的风气，而这会令提交信息难以理解。
+
+* 概要行（即第一行）应当简明扼要。它最好不超过 50 个字符，首字母大写，使用现在时祈使语气。不要以句号结尾, 因为它相当于*标题*。
+
+  ```shell
+  # 好
+  Mark huge records as obsolete when clearing hinting faults
+
+  # 不好
+  fixed ActiveModel::Errors deprecation messages failing when AR was used outside of Rails.
+  ```
+
+* 在那之后空一行，然后填写详细描述。每行不超过 *72 字符*，解释*为什么*需要改动, *如何*解决了这个 issue 以及它有什么*副作用*。
+
+  最好提供相关资源的链接，例如 bug tracker 的 issue 编号：
+  ```shell
+  Short (50 chars or fewer) summary of changes
+
+  More detailed explanatory text, if necessary. Wrap it to
+  72 characters. In some contexts, the first
+  line is treated as the subject of an email and the rest of
+  the text as the body.  The blank line separating the
+  summary from the body is critical (unless you omit the body
+  entirely); tools like rebase can get confused if you run
+  the two together.
+
+  Further paragraphs come after blank lines.
+
+  - Bullet points are okay, too
+
+  - Use a hyphen or an asterisk for the bullet,
+    followed by a single space, with blank lines in
+    between
+
+  Source http://tbaggery.com/2008/04/19/a-note-about-git-commit-messages.html
+  ```
+
+  最后，编写提交信息时，设想一下你一年以后再看这段提交信息时，希望获取什么信息。
+
+* 如果 *提交 A* 依赖于另一个 *提交 B* ，在前者的 commit message 中应当指明。援引对应提交的 Hash。
+
+  同理，如果 *提交 A* 解决了 *提交 B* 引入的 bug，这应当也被在 *提交 A* 提及。
+* 如果将一个提交 squash 到另一个提交，分别使用 `--squash` 和 `--fixup` 来强调目的。
+  ```shell
+  $ git commit --squash f387cab2
+  ```
+  *（Rebase 时使用 `--autosquash` 参数，标记的提交就会自动 squash。）*
+
+### Merging
+
+* **不要篡改提交历史。**仓库的历史本身就很宝贵，重要的是它能够还原*实际发生了什么*。对任何参与项目的人来说，修改历史是万恶之源。
+* 尽管如此，有些时候还是可以重写历史，例如：
+  * 你一个人孤军奋战，而且你的代码不会被人看到。
+  * 你希望整理分支（例如使用 squash），以便日后合并。
+  最重要的，*不要重写你的 master 分支历史* 或者任何有特殊意义的分支（例如发布分支或 CI 分支）。
+* 保持你的提交历史*干净*、*简单*。*在你 merge* 你的分支之前：
+  1. 确保它符合风格指南，如果不符合就执行相应操作，比如 squash 或重写提交信息。
+  2. 将其 rebase 到目标分支：
+     ```shell
+     [my-branch] $ git fetch
+     [my-branch] $ git rebase origin/master
+     # then merge
+     ```
+  这样会在 master 后直接添加一个新版本，令提交历史更简洁。
+
+  *（这个策略更适合较短生命周期的分支，否则还是最好经常合并而不是 rebase。）*
+
+* 如果你的分支包含多个 commmit , 不要使用快进模式。
+  ```shell
+  # 好；注意添加合并信息
+  $ git merge --no-ff my-branch
+
+  # 不好
+  $ git merge my-branch
+  ```
+
+### Misc.
+
+* 有许多工作流，每一个都有好有坏。一个工作流是否符合你的情况，取决于你的团队，项目，和你的开发规律。
+
+  也就是说，重要的是认真 *选择* 合适的工作流并且坚持。
+* *保持统一*， 这涉及到从工作流到你的提交信息，分支名还有标签。 在整个 Repository 中保持统一的命名风格有助于辨认工作进度。
+* *push 前测试*， 不要提交未完成的工作。
+* 使用 [annotated tags](http://git-scm.com/book/en/v2/Git-Basics-Tagging#Annotated-Tags) 标记发布版本或者其他重要的时间点。
+
+  个人开发可以使用 [lightweight tags](http://git-scm.com/book/en/v2/Git-Basics-Tagging#Lightweight-Tags)，例如为以后参考做标记。
+* 定期维护，保证你的仓库状态良好，包括本地还有远程的仓库。
+
+  * [`git-gc(1)`](http://git-scm.com/docs/git-gc)
+  * [`git-prune(1)`](http://git-scm.com/docs/git-prune)
+  * [`git-fsck(1)`](http://git-scm.com/docs/git-fsck)
+
+### REFERENCES MAKE COMMITS REACHABLE
+
+git 会清理不用的commit.那哪些是不用的commit呢？首先我们知道ref包括branch tag head,其中每个ref都会指向一个commit,而每个commit中包含一个或者多个父节点。这样我们从所有的ref出发不断找父节点，可以徧历出能够到达的commit列表。而不在这个列表的commit就是不能到达的，会在 `git gc` 后被删除。
+
+### commit 是不可变的
+
+git commit --amend 将改动提交到上一次提交，表面来看是改变上一个提交，但其实没有，git其实是创建了一个新的提交包含了上一个提交的改动和你这次提交的改动，然后替换了上一个提交。就和java的字符串一样，每一次改动都是创建新的副本然后替换老的。类似命令包括 git rebase ,git reset.因此在使用这些命令的时候并不需要担心操作失误导致改动丢失。这样在 git 进行下一次垃圾回收之前，你 rebase 或 reset 之前的提交都是存在的.
+
 ## 参考资料
++ [git-guide](http://rogerdudler.github.io/git-guide/index.zh.html) 最简洁的中文教程，不过内容有点太少了
++ [learnGitBranching](http://pcottle.github.io/lernGitBranchinng/?demo) 交互式教程，边做练习边动态展示git命令的作用，非常适合自学，可以切换中文, 五星推荐
++ [git cheatsheet](http://ndpsoftware.com/git-cheatsheet.html) 通过交互式的界面显示命令的cheatsheet,非常方便查询命令，五星推荐
 + [Deep Dive into Git](https://www.youtube.com/watch?v=dBSHLb1B8sw) 视频讲解git的内部原理，五星推荐
-+ [learnGitBranching](http://pcottle.github.io/lernGitBranchinng/?demo)
-+ [沉浸式学Git](http://igit.linuxtoy.og/)
-+ [git cheatsheet](http://ndpsoftware.com/git-cheatsheet.html) 通过交互式的界面显示命令，五星推荐
++ [Git Internals](http://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain) Pro Git 讲解git原理的章节，并用ruby模拟git的一些实现的逻辑，五星推荐
++ [Think Like (a) Git](http://think-like-a-git.net/) 用图论讲解git,git cherry-pick,以及git rebase都讲的不错，适合加深理解
++ [沉浸式学Git](http://igit.linuxtoy.og/) 中文教程
 + [github-cheat-sheet](https://github.com/tiimgreen/github-cheat-sheet)
 + [githug](https://github.com/Gazler/githug)
 + [git-style-guide](https://github.com/aseaday/git-style-guide)
-+ [git-guide](https://github.com/rogerdudler/git-guide)
 + [git-magic](http://www-cs-students.stanford.edu/~blynn//gitmagic/)
 + [git-scm document](http://git-scm.com/doc)
-+ [Git Internals](http://git-scm.com/book/en/v2/Git-Internals-Plumbing-and-Porcelain) Pro Git 讲解git原理的章节，并用ruby模拟git的一些实现的逻辑，五星推荐
 + [Official Git Video Tutorials](http://git-scm.com/videos)
 + [Code School Try Git](http://try.github.com/)
 + [Introductory Reference & Tutorial for Git](http://gitref.org/)
@@ -517,3 +716,5 @@ $ git rebase abcde^ --autosquash -i
 + [Git Visualization Playground](http://onlywei.github.io/explain-git-with-d3/#freeplay)
 + [Learn Git Branching](http://pcottle.github.io/learnGitBranching/)
 + [A collection of useful .gitignore templates](https://github.com/github/gitignore)
++ [图解Git](http://marklodato.github.io/visual-git-guide/index-zh-cn.html) 中文教程
+
