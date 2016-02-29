@@ -30,7 +30,12 @@ Git 作为如今开源世界的基础，优秀教程多如牛毛。随意挑其�
 
 Kent Beck(JUnit作者) 说他最终发现git的命令其实都是图算法中节点的创建删除和移动.
 
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/kent_beck_tweet.jpg)
+
 ### 概念
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/graphs-and-git.png)
+
 + sha-1                                   #是内容如 3d6051579e6434c62965b30583c67884f513acab 这样的字符串，用来唯一标识一段内容。类似与md5,在命令行下有sha1sum命令可以帮助生成文件的sha-1的值。其特点同样的内容生成出的sha-1值是一样的,而且不同的文件生成相同的sha-1概率是非常小的(到2014年为止，都没有听说有人遇到过碰撞的情况)。在 git 中，会通过 sha-1 去标识文件内容，提交内容，分支内容等等，也通过sha-1去查找文件内容.
 + blob                                    #git中保存文件内容的对象，存储在.git/objects目录下，会对文件内容的sha-1为文件名(准确的说是后38位，前两位为其所在子目录名)，并以zlib对文件内容进行压缩存储。
 + tree                                    #git中保存目录信息的对象，存储在.git/objects目录下，存储了目录和文件的层次信息也就是说会包含blob对象和子tree对象，同样会以这些信息的sha-1为文件名。
@@ -39,14 +44,13 @@ Kent Beck(JUnit作者) 说他最终发现git的命令其实都是图算法中节
 + branch                                  #branch是ref的一种，含意是分支，每当用户在一个分支上有新的提交时，git会自动帮你把该branch指向的commit信息更新。因此branch和svn中的branch相比要轻量级很多。不用考虑会有额外的开销。用户可以随时拉出一个分支去做自己想要做的工作，随时合并回主分支. 分支是用来将特性开发绝缘开来的。在你创建仓库的时候，master 是“默认的”分支。在其他分支上进行开发，完成后再将它们合并到主分支上。
 + tag                                     #tag也是ref的一种，含意是标签，同样是给一个commit起别名，但这个别名是不可变的,同时还支持添加额外的描述信息，并保存为专用的tag对象(这也是为什么有时候tag不能直接当commit用的原因，而要tag^0来表示)
 + HEAD                                    #记录当前目录checkout出来的那个commit点或者是ref的点，保存在 .git/HEAD 里，git log 的时候，第一个点就是HEAD.也是你当前工作的那个点。你的改动也都是基于这个点。
-
-
-
 + STASH                                   #git的五个存储区域之一，用来临时存储用户不想提交的内容，主要是将INDEX中的改动存到STASH中，这样用户就可以在INDEX区域开始新的工作。可以理解为将INDEX中的改动移动到STASH中，同样也有命令支持将STASH中的内容移动到WORKSPACE中
 + WORKSPACE                               #git的五个存储区域之一，主要是用户还没有加入道INDEX区域中的改动，这部份改动还没有存入到.git中，如果要提交这部份改动需要先将他们加入到INDEX区域中。我们直接修改一个文件，或者创建删除一个文件，这些改动都是在WORKSPACE区域
 + INDEX                                   #git的五个存储区域之一，已经存到.git中，但还没有提交的改动，所谓提交就是把在INDEX中的内容对应tree，加上提交的描述和提交的作者等信息创建一个新的commit对象，并清空INDEX区域。git add 命令就是将WORKSPACE中的改动移动到INDEX中。
 + LOCAL REPOSITORY                        #git的五个存储区域之一，指本地的git库,git commit可以理解为改动从INDEX区域提交到了LOCAL REPOSITORY。
 + UPSTREAM REPOSITORY                     #git的五个存储区域之一，指远程的git库.我们会使用一个服务器去集中管理多个人的提交。这时就存在这样一个UPSTREAM REPOSITORY，git push可以理解为将改动存到UPSTREAM REPOSITORY区域
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/trees.png)
 
 + merge                                   #将两个来自于同一个父亲节点然后有不同改动的点，合并成一个点.
 + rebase                                  #改变改动的次序,修改改动历史，让改动更清晰，更有意义
@@ -56,6 +60,11 @@ Kent Beck(JUnit作者) 说他最终发现git的命令其实都是图算法中节
 + 相对引用                                 # 形如 HEAD^^ 或者 HEAD~2 ,指当前commit的上上个commit.这样不用去记忆长长的sha-1值
 
 ## Git基本流程
+
+Git流程简单示意图:
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/branches.png)
+
 
 ```
 # Step 1: 安装git
@@ -247,6 +256,10 @@ $ git add .
 
 ### git branch
 
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_branch_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_branch_2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_branch_3.png)
+
 ```
 #列出所有分支
 $ git branch -va
@@ -264,6 +277,10 @@ $ git branch -D branch_name
 ### git am
 ### git checkout
 
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_checkout_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_checkout_2.png)
+
+
 ```
 # 检出本地的一个分支，如果为远程分支，HEAD将在一个游离的点上
 $ git checkout master
@@ -275,6 +292,24 @@ $ git checkout -
 ```
 
 ### git cherry-pick
+
++ 例1
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_cherry_pick_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_cherry_pick_2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_cherry_pick_n_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_cherry_pick_n_2.png)
+
++ 例2
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-3.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-4.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-5.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-6.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-7.png)
+
 ### git clone
 
 ```
@@ -293,6 +328,9 @@ $ git clean -f -d -x
 ```
 
 ### git commit
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_commit_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_commit_2.png)
 
 ```
 # 提交INDEX中的改动，并指定提交信息
@@ -313,6 +351,9 @@ $ git diff branch_1 branch_2
 ```
 
 ### git fetch
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_fetch_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_fetch_2.png)
 
 ```
 #下载最新远程的分支和标签
@@ -340,6 +381,10 @@ $ git init
 
 ### git merge
 
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_merge_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_merge_2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_merge_3.png)
+
 ```
 #将远程的master分支的改动合到当前分支中
 $ git merge upstream/master
@@ -358,6 +403,16 @@ $ git log --all --graph --pretty=format:'%Cred%h%Creset -%C(auto)%d%Creset %s %C
 ### git mv
 ### git pull
 
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_master_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_master_2.png)
+
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_pull_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_pull_2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_pull_3.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_pull_4.png)
+
+
 ```
 # 下载远程分支，并合并到当前分支中
 $ git pull origin
@@ -365,7 +420,25 @@ $ git pull origin
 
 ### git push
 
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_2.png)
+
+
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_create_branch.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_create_branch_2.png)
+
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_clearly_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_clearly_2.png)
+
+
+
 ```
+# 将本地代码推送到远程分支。
+$ git push <remote> <place>
+
 # 将本地改动提交到 UPSTREAM REPOSITORY
 $ git push origin master
 
@@ -378,6 +451,13 @@ $ git push origin master -f
 
 ### git rebase
 
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_3.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_4.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_i_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_i_2.png)
+
 ```
 $ git rebase master
 $ git rebase -i
@@ -386,12 +466,18 @@ $ git rebase -i
 
 ### git reset
 
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_reset_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_reset_2.png)
+
 ```
 # 清空在INDEX和WORKSPACE的改动
 $ git reset --hard
 ```
 
 ### git revert
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_revert_1.png)
+
 ### git rm
 
 ```
@@ -425,6 +511,11 @@ $ git status -sb
 
 ### git stash
 ### git tag
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_tag.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_tag_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_tag_2.png)
+
 ### gitk
 ### git config
 
@@ -444,6 +535,11 @@ $ git config --global color.ui true
 ### git reflog
 ### git prune
 ### git remote
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_3.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_4.png)
 
 ```
 # 添加新的远程库
@@ -506,6 +602,17 @@ $ git archive --format zip --output /full/path/to/zipfile.zip master
 ## 配置
 
 ## 技巧
+
++ 本地和远程分支的关联。通过git checkout origin/master -b master,切换出来的分支，默认是会建立，master和origin/master之间的关系。就是master的upstream是origin/master.
+在建立了这种联系以后。在master分支上git pull或者git push都可以省略远程目标，因为git会默认使用关联的远程分支做目标。类似命令还有 git branch -u o/master master,手动指定 upstream
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_2.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_3.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_4.png)
+
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_upstream_1.png)
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_upstream_2.png)
 
 + sha-1值可以只写前几位，只要能够区分不同的commit就行，比如 fed2da64c0efc5293610bdd892f82a58e8cbc5d8 就可以简写为 fed2 。
 我们可以用4位以上的位数的sha-1的前缀去表示一个sha-1,只要能保证唯一.当然只用四位唯一标识一个提交在android一些比较大的库还是有可能重复的，
