@@ -424,6 +424,21 @@ $ git fetch origin '+refs/changes/*:refs/remotes/origin/changes/*'
 ```
 #比较两个分支代码的差别
 $ git diff branch_1 branch_2
+
+# only show file name change
+$ git diff --name-status branch_1 branch_2
+
+# only show file name and modify numbers
+$ git diff --stat branch_1 branch_2
+
+$ git diff branch_1 branch_2
+
+# find out modify files number
+git --no-pager diff --name-status branch_1 branch_2 | grep -E  '^M' | wc -l
+
+# find out file changes number
+git diff --stat branch_1 branch_2 -- file_name  | head -1 | awk -F'|' '{print $2}' | awk '{print $1}'
+
 ```
 
 ### git format-patch
