@@ -28,7 +28,7 @@ Git 作为如今开源世界的基础，优秀教程多如牛毛。随意挑其�
 
 可以在本文最后的参考资料中找到优秀的教程链接。比如 [learnGitBranching](http://pcottle.github.io/lernGitBranchinng/?demo) ，讲解加练习，支持中文，请一定要过一遍。
 
-作为 linus 这样的技术大神设计的工具，本身就是非常技术化的思路。因此最好了解其内部原理，这样学习起来会更轻松，记忆也会更深刻。 Kent Beck(JUnit作者) 说他最终发现git的命令其实都是图算法中节点的创建删除和移动.
+作为 linus 这样的技术大神设计的工具，本身就是非常技术化的思路。因此最好了解其内部原理，这样学习起来会更轻松，记忆也会更深刻。 Kent Beck(JUnit作者) 说他最终发现git的命令其实都是图算法中节点的创建删除和移动.  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/kent_beck_tweet.jpg)
 
 讲解原理的推荐看，pro git 的相关章节  [Git 内部原理](http://git-scm.com/book/zh/v2/Git-%E5%86%85%E9%83%A8%E5%8E%9F%E7%90%86-%E5%BA%95%E5%B1%82%E5%91%BD%E4%BB%A4%E5%92%8C%E9%AB%98%E5%B1%82%E5%91%BD%E4%BB%A4)  或者 相关youtube视频 [Deep Dive into Git](https://www.youtube.com/watch?v=dBSHLb1B8sw)
@@ -43,7 +43,7 @@ Git 作为版本控制系统，主要需要存储文件内容，目录结构，�
 + sha-1                                   #是内容如 3d6051579e6434c62965b30583c67884f513acab 这样的字符串，用来唯一标识一段内容。类似与md5,在命令行下有sha1sum命令可以帮助生成文件的sha-1的值。其特点同样的内容生成出的sha-1值是一样的,而且不同的文件生成相同的sha-1概率是非常小的(到2014年为止，都没有听说有人遇到过碰撞的情况)。在 git 中，会通过 sha-1 去标识文件内容，提交内容，分支内容等等，也通过sha-1去查找文件内容.
 + blob                                    #git中保存文件内容的对象，存储在.git/objects目录下，会对文件内容的sha-1为文件名(准确的说是后38位，前两位为其所在子目录名)，并以zlib对文件内容进行压缩存储。
 + tree                                    #git中保存目录信息的对象，存储在.git/objects目录下，存储了目录和文件的层次信息也就是说会包含blob对象和子tree对象，同样会以这些信息的sha-1为文件名。
-+ commit                                  #git中保存一次提交信息的对象，一次提交可以认为是工作目录所有文件的快照(很多人以为commit保存的是改动，其实不是)，这个快照记录了一个tree信息(整个工作目录以及文件内容的信息)，提交者，提交信息，修改时间,父节点信息，然后同样以这些信息得出的sha-1为文件名保存在.git/objects目录下。
++ commit                                  #git中保存一次提交信息的对象，一次提交可以认为是工作目录所有文件的快照(很多人以为commit保存的是改动，其实不是)，这个快照记录了一个tree信息(整个工作目录以及文件内容的信息)，提交者，提交信息，修改时间,父节点信息，然后同样以这些信息得出的sha-1为文件名保存在.git/objects目录下。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/graphs-and-git.png)
 
 + ref                                     #可以理解为commit的别名。sha-1不利于记忆，因此我们更多的是给commit加上别名，这部份信息存储在.git/refs下
@@ -60,7 +60,7 @@ Git 作为版本控制系统，主要需要存储文件内容，目录结构，�
 
 + LOCAL REPOSITORY                        #git的五个存储区域之一，指本地的git库,git commit可以理解为改动从INDEX区域提交到了LOCAL REPOSITORY。
 
-+ INDEX                                   #git的五个存储区域之一，已经存到.git中，但还没有提交的改动，所谓提交就是把在INDEX中的内容对应tree，加上提交的描述和提交的作者等信息创建一个新的commit对象，并清空INDEX区域。git add 命令就是将WORKSPACE中的改动移动到INDEX中。这个区域也是git和其他版本控制系统最大的区别。下图就是workspace区域 Index区域 和 LOCAL REPOSITORY区域之间相互交互的方式。在Workspace修改，然后通过git add 加到 Index,再通过commit，将Index中的改动提交到LOCAL REPOSITORY中.
++ INDEX                                   #git的五个存储区域之一，已经存到.git中，但还没有提交的改动，所谓提交就是把在INDEX中的内容对应tree，加上提交的描述和提交的作者等信息创建一个新的commit对象，并清空INDEX区域。git add 命令就是将WORKSPACE中的改动移动到INDEX中。这个区域也是git和其他版本控制系统最大的区别。下图就是workspace区域 Index区域 和 LOCAL REPOSITORY区域之间相互交互的方式。在Workspace修改，然后通过git add 加到 Index,再通过commit，将Index中的改动提交到LOCAL REPOSITORY中.  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/trees.png)
 
 
@@ -69,7 +69,7 @@ Git 作为版本控制系统，主要需要存储文件内容，目录结构，�
 
 #### git中的操作
 + commit                                  #commit就是普通的提交。会在当前分支上增加一个新的点。
-+ merge                                   #将两个分支的改动合并到一个点上.
++ merge                                   #将两个分支的改动合并到一个点上.  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/branches.png)
 
 + rebase                                  #改变改动的次序,修改改动历史，让改动更清晰，更有意义。
@@ -274,10 +274,10 @@ $ git add .
 ### git commit
 
 一个简单的提交的例子:
-+ 当前在master分支上
++ 当前在master分支上  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_commit_1.png)
 
-+ 做简单的改动，然后 `git commit` ，结果如下图所示，新增一个C2的commit ，而且master自动的指向这个新的点。
++ 做简单的改动，然后 `git commit` ，结果如下图所示，新增一个C2的commit ，而且master自动的指向这个新的点。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_commit_2.png)
 
 ```
@@ -296,13 +296,13 @@ $ git commit -m "Big-ass commit" --allow-empty
 查看分支相关信息，或者创建分支等.
 
 一个创建分支，并提交新改动的例子:
-+ 如下图，我们有一个master分支，指定C1,其中星号表示当前检出的分支是master
++ 如下图，我们有一个master分支，指定C1,其中星号表示当前检出的分支是master  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_branch_1.png)
 
-+ 执行 `git branch newImage master` , 创建新分支，结果如下
++ 执行 `git branch newImage master` , 创建新分支，结果如下  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_branch_2.png)
 
-+ 执行 `git commit` ,我们会看到 master 向前走了一个点。这是因为我们检出的是master分支，因此提交也会往master分支提.
++ 执行 `git commit` ,我们会看到 master 向前走了一个点。这是因为我们检出的是master分支，因此提交也会往master分支提.  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_branch_3.png)
 
 ```
@@ -324,10 +324,10 @@ $ git branch -D branch_name
 将一个commit或者一个branch检出到工作目录。这样后续工作的提交就会提交在新检出的分支上。
 
 下面是一个简单的例子:
-+ 该git库，有两个分支，如图所示，检出在master分支上
++ 该git库，有两个分支，如图所示，检出在master分支上  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_checkout_1.png)
 
-+ 执行 `git checkout newImage` ,然后再提交。结果如下图所示，新的提交在 newImage 分支上
++ 执行 `git checkout newImage` ,然后再提交。结果如下图所示，新的提交在 newImage 分支上  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_checkout_2.png)
 
 
@@ -344,33 +344,33 @@ $ git checkout -
 ### git cherry-pick
 将其他分支的一个改动拿到另一个分支上。这个功能非常重要。几乎是CM的主要工作。
 
-+ 下面是一个例子，有side 和 master 两个分支，现在将 side的部份改动通过cherry-pick的方式拿道master上
++ 下面是一个例子，有side 和 master 两个分支，现在将 side的部份改动通过cherry-pick的方式拿道master上  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_cherry_pick_1.png)
 
-+ 执行 `git cherry-pick C2 C4` ,如下图，我们得到了 C2' 和 C4'两个新提交。由于git的commit是包含所有文件信息的快照，其实C2和C2'差别很大。他们唯一的关系是 diff C5..C2' 和 diff C1..C2内容相同.
++ 执行 `git cherry-pick C2 C4` ,如下图，我们得到了 C2' 和 C4'两个新提交。由于git的commit是包含所有文件信息的快照，其实C2和C2'差别很大。他们唯一的关系是 diff C5..C2' 和 diff C1..C2内容相同.  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_cherry_pick_2.png)
 
 首先我们知道每一个commit其实是包含所有文件的内容的，也可以理解为是完整的快照，cherry-pick的原理是将要拿的那个commit和那个commit的上一个commit进行diff，然后把diff再打到目标分支上。
 
-+ 下图是一个cherry-pick详细流程的例子，这个例子要将C D E 提交cherry-pick 到 H后面。cherry-pick的内部流程第一步,就是比较 B..C 的改动。
++ 下图是一个cherry-pick详细流程的例子，这个例子要将C D E 提交cherry-pick 到 H后面。cherry-pick的内部流程第一步,就是比较 B..C 的改动。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-1.png)
 
-+ 然后将B..C 的改动打到H后面，成为新的提交C'
++ 然后将B..C 的改动打到H后面，成为新的提交C'  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-2.png)
 
-+ 比较得到 C..D 的改动
++ 比较得到 C..D 的改动  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-3.png)
 
-+ 将 C..D 的改动打到 C'后面，成为 D'
++ 将 C..D 的改动打到 C'后面，成为 D'  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-4.png)
 
-+ 比较得到 D..E 的改动
++ 比较得到 D..E 的改动  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-5.png)
 
-+ 将 D..E 的改动打到 D'上，成为 E'
++ 将 D..E 的改动打到 D'上，成为 E'  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-6.png)
 
-+ 至此，`git cherry-pick C D E` 完成。
++ 至此，`git cherry-pick C D E` 完成。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/cherry-pick-step-7.png)
 
 
@@ -402,9 +402,10 @@ $ git clean -f -d <Path>
 ### git fetch
 从远程分支同步最新提交的本地的远程分支。
 
-+ 左边是本地分支，o/master指origin/master.右边是远程分支，有两个新提交。
++ 左边是本地分支，o/master指origin/master.右边是远程分支，有两个新提交。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_fetch_1.png)
-+ 现在执行 `git fetch` , 会将远程分支的新提交同步到o/master这个本地远程分支上，但并不会改动本地的master
+
++ 现在执行 `git fetch` , 会将远程分支的新提交同步到o/master这个本地远程分支上，但并不会改动本地的master  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_fetch_2.png)
 
 ```
@@ -481,10 +482,10 @@ $ git init
 ### git merge
 merge是git中团队协作的时候最常见的操作之一。比如两个人并行的在一个base上开发独立的新功能，那么在他们提交的时候就需要merge,再合到一起。下面是一个最简单的例子。
 
-+ 当前主分支为master,我们在C1的时候拉出了一个bugFix的分支，单独解bug,提交了C2
++ 当前主分支为master,我们在C1的时候拉出了一个bugFix的分支，单独解bug,提交了C2  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_merge_1.png)
 
-+ 执行 `git merge bugFix` ,git 会自动把C2 C3的改动合到一起得到C4.并将master指向C4.这就是 merge 的过程。同时我们可以看出，使用merge的方式，bugFix这一分支以及内容都是被保留的。而且C4有了两个父节点。可以考虑一下 master^ 和 master^^ 分别指向谁。
++ 执行 `git merge bugFix` ,git 会自动把C2 C3的改动合到一起得到C4.并将master指向C4.这就是 merge 的过程。同时我们可以看出，使用merge的方式，bugFix这一分支以及内容都是被保留的。而且C4有了两个父节点。可以考虑一下 master^ 和 master^^ 分别指向谁。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_merge_2.png)
 
 ```
@@ -509,10 +510,10 @@ $ git log --all --graph --pretty=format:'%Cred%h%Creset -%C(auto)%d%Creset %s %C
 ### git pull
 将远程分支同步到本地的远程分支，并合并到本地分支上。
 
-+ 如下图，左边实线的是本地库，o/master指本地远程分支，master为当前分支，有一个新的本地提交，右边虚线为远程库，远程master分支要比本地领先一个提交C3
++ 如下图，左边实线的是本地库，o/master指本地远程分支，master为当前分支，有一个新的本地提交，右边虚线为远程库，远程master分支要比本地领先一个提交C3  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_pull_1.png)
 
-+ 我们执行 `git pull` ,我们会将远程的master同步到本地的o/master上，然后本地的master再merge 分支 o/master, 结果如下图。
++ 我们执行 `git pull` ,我们会将远程的master同步到本地的o/master上，然后本地的master再merge 分支 o/master, 结果如下图。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_pull_2.png)
 
 
@@ -528,26 +529,27 @@ $ git pull --rebase
 将本地的改动同步到远程分支。
 
 普通提交的例子。
-+ 下图，左为本地库，右为远程库。本地库比远程库领先一个提交
++ 下图，左为本地库，右为远程库。本地库比远程库领先一个提交  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_1.png)
 
-+ 执行 `git push` ,便自动将本地的C2同步到远程分支上了，结果如下。值得注意的时，如果远程分支有新提交，我们会提交失败。
++ 执行 `git push` ,便自动将本地的C2同步到远程分支上了，结果如下。值得注意的时，如果远程分支有新提交，我们会提交失败。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_2.png)
 
 
 
 我们也可以指定本地的一个分支名，推送到远端的一个分支名。以便更精确的推送。 下面就是这样的例子
-+ 下图，左为本地库，右为远程库。本地库比远程库领先两个提交。
++ 下图，左为本地库，右为远程库。本地库比远程库领先两个提交。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_clearly_1.png)
 
-+ 执行 `git push origin foo^:master` ,可以精准的将自己的一部分提交，同步到远程分支
++ 执行 `git push origin foo^:master` ,可以精准的将自己的一部分提交，同步到远程分支  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_push_clearly_2.png)
 
 
 在远端创建新分支的例子
-+ 下图种，左为本地库，右为远程库。本地领先一个提交。
++ 下图种，左为本地库，右为远程库。本地领先一个提交。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_create_branch.png)
-+ 执行 `git push origin master:newBranch`,指定了要推送的分支和目标分支。由于远程没有该目标分支，于是创建了这个新的远程分支。
+
++ 执行 `git push origin master:newBranch`,指定了要推送的分支和目标分支。由于远程没有该目标分支，于是创建了这个新的远程分支。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_create_branch_2.png)
 
 
@@ -568,21 +570,22 @@ $ git push origin master -f
 ### git rebase
 rebase是一个修改历史的命令，是将另一个分支作为起点，将自己分支上的改动cherry-pick到新的起点上
 
-+ 如下图，有两个分支，一个master,一个bugFix。假如我们需要继续在bugFix上工作，而且master上新的C2改动对我们也很重要，需要拿进来，这个时候就可以用rebase.
++ 如下图，有两个分支，一个master,一个bugFix。假如我们需要继续在bugFix上工作，而且master上新的C2改动对我们也很重要，需要拿进来，这个时候就可以用rebase.  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_1.png)
 
-+ 执行 `git rebase master bugFix`,git会先找到公共的C1,然后将C1..bugFix之间的所有提交cherry-pick到master后面。结果如下:
++ 执行 `git rebase master bugFix`,git会先找到公共的C1,然后将C1..bugFix之间的所有提交cherry-pick到master后面。结果如下:  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_2.png)
 
-+ 如果两个分支在一条线上，则rebase的过程会很简单。如果我们就在刚刚的库上继续操作
++ 如果两个分支在一条线上，则rebase的过程会很简单。如果我们就在刚刚的库上继续操作  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_3.png)
 
-+ 执行 `git rebase bugFix master`,master会直接移动到bugFix指向的点，结果如图:
++ 执行 `git rebase bugFix master`,master会直接移动到bugFix指向的点，结果如图:  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_4.png)
 
-+ rebase的另一个用途是修改提交的历史，比如想要去掉历史的某个提交,或者改变提交的词序。初始状态如下。
++ rebase的另一个用途是修改提交的历史，比如想要去掉历史的某个提交,或者改变提交的词序。初始状态如下。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_i_1.png)
-+ 执行 `git rebase -i` ,并从编辑器中重新调整提交的词序。 git 会自动根据新的词序cherry-pick之前的提交并生成新的提交。结果如下
+
++ 执行 `git rebase -i` ,并从编辑器中重新调整提交的词序。 git 会自动根据新的词序cherry-pick之前的提交并生成新的提交。结果如下  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_rebase_i_2.png)
 
 ```
@@ -595,9 +598,10 @@ $ git rebase -i
 ### git reset
 一般有两个用途，一个是清理目录中的改动，一个是回退到以前的一个点。
 
-+ 下图是一个普通的库，当前master在C2这个点上
++ 下图是一个普通的库，当前master在C2这个点上  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_reset_1.png)
-+ 执行 `git reset --hard C1`,可以回退到C1这个点。结果如下图所示。
+
++ 执行 `git reset --hard C1`,可以回退到C1这个点。结果如下图所示。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_reset_2.png)
 
 ```
@@ -608,9 +612,10 @@ $ git reset --hard
 ### git revert
 revert主要用来冲掉以前的一个错误提交。有这个命令主要是因为，git有远程库，这个远程库可能是集中式的，如果你的提交已经提交到了远程库，这时候再用git rebase或者reset修改历史来解决，就需要所有用户修改历史，这个代价太大了。因此有了git revert,它会生成一个包含目标提交相反的新提交。这样对其他用户影响较小。
 
-+ 下图演示一般revert的效果。我们的C2提交是错误的，并已经同步到远程分支，因此不适合通过rebase的方式修改
++ 下图演示一般revert的效果。我们的C2提交是错误的，并已经同步到远程分支，因此不适合通过rebase的方式修改  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_revert_1.png)
-+ 执行 `git revert C2`,生成了新的 C2' 提交，冲掉之前 C2 的改动，结果如下
+
++ 执行 `git revert C2`,生成了新的 C2' 提交，冲掉之前 C2 的改动，结果如下  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_revert_2.png)
 
 ### git rm
@@ -662,10 +667,10 @@ $ git stash list
 ### git tag
 给某个commit打上标签。标签一般来说是不可变的，用来记录一些项目中关键的节点。
 
-+ 比如下图中的C1点是一个测试完全通过的点，我们需要记录这个点，我们可以记住C1这个sha-1号，但不容易记忆，于是我们可以打上tag.
++ 比如下图中的C1点是一个测试完全通过的点，我们需要记录这个点，我们可以记住C1这个sha-1号，但不容易记忆，于是我们可以打上tag.  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_tag.png)
 
-+ 执行 `git tag v1 C1`, 就在 C1 上打上了tag,示意图如下
++ 执行 `git tag v1 C1`, 就在 C1 上打上了tag,示意图如下  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_tag_2.png)
 
 
@@ -694,14 +699,18 @@ $ git config --global color.ui true
 ### git remote
 git remote主要用来显示远程分支的信息，以及添加或改动远程分支信息
 
-+ 比如我们有一个本地库，我们想要用一个集中的代码服务器帮忙管理，比如github.于是我们就可以在github上新建一个库
++ 比如我们有一个本地库，我们想要用一个集中的代码服务器帮忙管理，比如github.于是我们就可以在github上新建一个库  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_1.png)
-+ 执行 `git remote add origin git://xxxxx.git;git push` ,结果如下,虚线为远程分支。
+
++ 执行 `git remote add origin git://xxxxx.git;git push` ,结果如下,虚线为远程分支。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_2.png)
-+ 我们可以看到，在关联了远程分支以后，本地会自动多出一个名为 origin/master (o/master)的分支，这就是本地远程分支，这个分支不能被检出，只会在同步远程分支的时候被改变.
-![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_3.png)
-+ 执行 `git checkout o/master;echo " " > edit.txt;git commit`,结果如下，如上所说，o/master不变。
+
++ 我们可以看到，在关联了远程分支以后，本地会自动多出一个名为 origin/master (o/master)的分支，这就是本地远程分支，这个分支不能被检出，只会在同步远程分支的时候被改变.  
+![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_3.png) 
+
++ 执行 `git checkout o/master;echo " " > edit.txt;git commit`,结果如下，如上所说，o/master不变。  
 ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_remote_4.png)
+
 
 ```
 # 添加新的远程库
@@ -786,12 +795,12 @@ $ git archive --format zip --output /full/path/to/zipfile.zip master
 
 + 本地和远程分支的关联。通过git checkout origin/master -b master,切换出来的分支，默认是会建立，master和origin/master之间的关系。就是master的upstream是origin/master.
 在建立了这种联系以后。在master分支上git pull或者git push都可以省略远程目标，因为git会默认使用关联的远程分支做目标。类似命令还有 git branch -u o/master master,手动指定 upstream
-  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_1.png)
-  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_2.png)
-  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_3.png)
-  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_4.png)
-  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_upstream_1.png)
-  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_upstream_2.png)
+  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_1.png)  
+  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_2.png)  
+  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_3.png)  
+  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_local_master_4.png)  
+  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_upstream_1.png)  
+  ![](https://github.com/qinshulei/git-guide-for-cm/raw/master/images/git_upstream_2.png)  
 
 + sha-1值可以只写前几位，只要能够区分不同的commit就行，比如 fed2da64c0efc5293610bdd892f82a58e8cbc5d8 就可以简写为 fed2 。
 我们可以用4位以上的位数的sha-1的前缀去表示一个sha-1,只要能保证唯一.当然只用四位唯一标识一个提交在android一些比较大的库还是有可能重复的，
